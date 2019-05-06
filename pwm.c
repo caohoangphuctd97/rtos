@@ -50,7 +50,7 @@ void ISR()
 #use rtos(timer=0, minor_cycle=1ms)
 //
 // Declare TASK 1 - called every 250ms
-//
+//bam xung 2 dong co
 #task(rate=1ms, max=1ms)
 void task_B0()
 {
@@ -62,7 +62,7 @@ if(zone==2) {
    setpoint = 49;
    count = 5;
    zone = 3;
-   set_pwm1_duty(0);
+  
    }
  //  if (count > 3){
  //     count = 4;
@@ -102,7 +102,7 @@ else
 }
 }
 
-
+// thuat toan PID dong bo dong co
 #task(rate=1ms, max=1ms)
 void PID()
 {
