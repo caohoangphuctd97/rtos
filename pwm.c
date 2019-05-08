@@ -21,7 +21,7 @@ float Error,pre_Error,P_part,Sum_err,delta_err,I_part,D_part;
 int data[6],dem,pwm1,pwm2,tf,zone,right_left;
 unsigned int count;
 float angle,out;  
-float Kp=0.0;
+float Kp=0.5;
 float Ki=0.135;
 float Kd=5.0;
 
@@ -54,26 +54,19 @@ void ISR()
 #task(rate=1ms, max=1ms)
 void task_B0()
 {
-if(zone==2) {
+if(zone==2&& count <6) {
   
    count +=1;
+   if(right_left<10){
+    Sum_err=0; delta_err=0; pre_Error=0;
    set_pwm1_duty(75);
-   if (count == 6) {
-   setpoint = 49;
-   count = 5;
-   zone = 3;
-  
+   setpoint = 55;}
+   
+   else {
+    Sum_err=0; delta_err=0; pre_Error=0;
+   set_pwm1_duty(100);
+   setpoint = 175;
    }
- //  if (count > 3){
- //     count = 4;
- //     set_pwm1_duty(0);
- //     }
- //  if(count<3) {     
- //     set_pwm1_duty(75);}
- //  else {
- //  setpoint = 90;
- //  set_pwm1_duty(pwm1);
- //  }
 }
 else
 { 
@@ -85,15 +78,9 @@ else
 #task(rate=1ms, max=1ms)
 void task_B1()
 {
-if(zone==2)// {
-//   if (count > 3) set_pwm2_duty(0);
-//   if(count<3) {
-      
-      set_pwm2_duty(0);//}
-//   else {  
-//   set_pwm2_duty(pwm2);
-//   }
-//}
+if(zone==2&& count <6)    
+   if(right_left<10) set_pwm2_duty(0);
+   else set_pwm2_duty(0);
 else
 {
    if(tf==1)
@@ -110,7 +97,7 @@ void PID()
       angle = data[1]*10+data[2]+ data[3]*0.1+data[4]*0.01;
       if(data[0] == 45) angle = angle*-1 ;
       Error = setpoint - angle ;
-      P_part = Kp*Error;
+      P_part = Kp*Error;     
       Sum_err += Error;
       if(Sum_err>50) Sum_err=50;
       if(Sum_err<-50) Sum_err=-50;
@@ -158,7 +145,7 @@ void main()
   
  enable_interrupts(INT_RDA);
  enable_interrupts(GLOBAL);
- setpoint=0;  
+ setpoint=0; 
  count = 0;  
  lcd_init();
  lcd_putc("\fdientuspider.com");
